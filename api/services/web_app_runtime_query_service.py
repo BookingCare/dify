@@ -97,22 +97,20 @@ class WebAppRuntimeQueryService:
             site["copyright"] = None
             site["input_placeholder"] = None
 
-        custom_config = None
-        if features.can_replace_logo:
-            tenant_custom_config = (
-                cast(Mapping[str, str | bool | None], json.loads(record.tenant_custom_config_json))
-                if record.tenant_custom_config_json
-                else {}
-            )
-            replace_webapp_logo = (
-                f"{self._files_url}/files/workspaces/{record.tenant_id}/webapp-logo"
-                if tenant_custom_config.get("replace_webapp_logo")
-                else None
-            )
-            custom_config = {
-                "remove_webapp_brand": tenant_custom_config.get("remove_webapp_brand", False),
-                "replace_webapp_logo": replace_webapp_logo,
-            }
+        tenant_custom_config = (
+            cast(Mapping[str, str | bool | None], json.loads(record.tenant_custom_config_json))
+            if record.tenant_custom_config_json
+            else {}
+        )
+        replace_webapp_logo = (
+            f"{self._files_url}/files/workspaces/{record.tenant_id}/webapp-logo"
+            if features.can_replace_logo and tenant_custom_config.get("replace_webapp_logo")
+            else None
+        )
+        custom_config = {
+            "remove_webapp_brand": True,
+            "replace_webapp_logo": replace_webapp_logo,
+        }
 
         return WebAppBootstrap(
             app_id=record.app_id,

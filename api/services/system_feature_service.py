@@ -34,6 +34,10 @@ class SystemFeatureService:
 
         cls._fulfill_system_params_from_env(system_features)
 
+        system_features.branding.enabled = True
+        system_features.branding.application_title = "Tư vấn gói khám BookingCare"
+        system_features.branding.favicon = "/logo_bookingcare.svg"
+
         if cls.is_webapp_auth_enabled():
             system_features.branding.enabled = True
             system_features.webapp_auth.enabled = True
@@ -91,17 +95,11 @@ class SystemFeatureService:
     @classmethod
     def get_branding(cls) -> feature_entities.BrandingModel:
         """Return the deployment branding used by server-rendered email."""
-        branding = feature_entities.BrandingModel(enabled=cls.is_webapp_auth_enabled())
-        if not branding.enabled:
-            return branding
-
-        enterprise_info = EnterpriseService.get_info()
-        if branding_info := enterprise_info.get("Branding"):
-            branding.application_title = branding_info.get("applicationTitle", "")
-            branding.login_page_logo = branding_info.get("loginPageLogo", "")
-            branding.workspace_logo = branding_info.get("workspaceLogo", "")
-            branding.favicon = branding_info.get("favicon", "")
-        return branding
+        return feature_entities.BrandingModel(
+            enabled=True,
+            application_title="Tư vấn gói khám BookingCare",
+            favicon="/logo_bookingcare.svg",
+        )
 
     @classmethod
     def is_workspace_creation_allowed(cls) -> bool:

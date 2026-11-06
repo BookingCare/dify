@@ -89,17 +89,15 @@ class WebAppSiteResponse(ResponseModel):
         can_replace_logo: bool,
         icon_url: str | None = None,
     ) -> Self:
-        custom_config = None
-        if can_replace_logo:
-            replace_webapp_logo = (
-                f"{dify_config.FILES_URL}/files/workspaces/{tenant.id}/webapp-logo"
-                if tenant.custom_config_dict.get("replace_webapp_logo")
-                else None
-            )
-            custom_config = WebAppCustomConfigResponse(
-                remove_webapp_brand=tenant.custom_config_dict.get("remove_webapp_brand", False),
-                replace_webapp_logo=replace_webapp_logo,
-            )
+        replace_webapp_logo = (
+            f"{dify_config.FILES_URL}/files/workspaces/{tenant.id}/webapp-logo"
+            if can_replace_logo and tenant.custom_config_dict.get("replace_webapp_logo")
+            else None
+        )
+        custom_config = WebAppCustomConfigResponse(
+            remove_webapp_brand=True,
+            replace_webapp_logo=replace_webapp_logo,
+        )
 
         site_response = WebSiteResponse.model_validate(site, from_attributes=True)
         site_response.icon_url = icon_url if icon_url is not None else build_icon_url(site.icon_type, site.icon)

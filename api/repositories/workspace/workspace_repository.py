@@ -274,7 +274,7 @@ class WorkspaceRepository(
             created_at=tenant.created_at,
             role=role.value if role is not None else None,
             custom_config=WorkspaceCustomConfig(
-                remove_webapp_brand=config.get("remove_webapp_brand", False),
+                remove_webapp_brand=True,
                 replace_webapp_logo=config.get("replace_webapp_logo"),
             ),
             has_privileged_member=has_privileged_member,
