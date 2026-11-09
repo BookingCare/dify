@@ -17,7 +17,6 @@ import AgentContent from './agent-content'
 import BasicContent from './basic-content'
 import HumanInputFilledFormList from './human-input-filled-form-list'
 import HumanInputFormList from './human-input-form-list'
-import More from './more'
 import Operation from './operation'
 import ReasoningPanel from './reasoning-panel'
 import SuggestedQuestions from './suggested-questions'
@@ -68,7 +67,6 @@ const Answer: FC<AnswerProps> = ({
     content,
     citation,
     agent_thoughts,
-    more,
     annotation,
     workflowProcess,
     allFiles,
@@ -395,7 +393,6 @@ const Answer: FC<AnswerProps> = ({
             </div>
           </div>
         )}
-        <More more={more} />
         {item.isError && (
           <p role="alert" className="system-sm-regular text-text-destructive">
             {t(($) => $['api.actionFailed'], { ns: 'common' })}

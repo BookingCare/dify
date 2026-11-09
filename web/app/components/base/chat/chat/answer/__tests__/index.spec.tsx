@@ -216,7 +216,7 @@ describe('Answer Component', () => {
       expect(screen.getByRole('img', { name: 'Assistant avatar' })).toBeInTheDocument()
     })
 
-    it('should render More component', () => {
+    it('should not show latency, token count or token cost under the answer', () => {
       render(
         <Answer
           {...defaultProps}
@@ -226,11 +226,9 @@ describe('Answer Component', () => {
           }}
         />,
       )
-      expect(
-        screen.getByText('appLog.detail.timeConsuming 1.5appLog.detail.second'),
-      ).toBeInTheDocument()
-      expect(screen.getByText('appLog.detail.tokenCost 1,200')).toBeInTheDocument()
-      expect(screen.getByText('20 tokens/s')).toBeInTheDocument()
+      expect(screen.queryByText(/appLog\.detail\.timeConsuming/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/appLog\.detail\.tokenCost/)).not.toBeInTheDocument()
+      expect(screen.queryByText('20 tokens/s')).not.toBeInTheDocument()
     })
   })
   it('submits the actual human input form using its token and action', async () => {
