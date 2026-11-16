@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://catalog.dev.bookingcare.vn"
+      "url": "https://goikham-catalog.dev.bookingcare.vn"
     }
   ],
   "paths": {
