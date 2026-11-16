@@ -1,0 +1,120 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Catalog BookingCare",
+    "version": "1.0.0",
+    "description": "Tra dữ liệu gói khám và cơ sở y tế của BookingCare từ thư mục du_lieu/. Chatbot chỉ trả lời từ dữ liệu này."
+  },
+  "servers": [
+    {
+      "url": "https://dify-local.onrender.com"
+    }
+  ],
+  "paths": {
+    "/tra_cuu": {
+      "post": {
+        "operationId": "tra_cuu",
+        "summary": "Tra gói / cơ sở theo nhu cầu của khách",
+        "description": "Nhận nhu cầu (JSON do bước Hiểu nhu cầu tạo ra), trả về khối dữ liệu gói / cơ sở và các GHI CHÚ để bước Trả lời dùng.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "nhu_cau"
+                ],
+                "properties": {
+                  "nhu_cau": {
+                    "type": "string",
+                    "description": "JSON nhu cầu của khách (kết quả bước Hiểu nhu cầu)"
+                  },
+                  "truoc": {
+                    "type": "string",
+                    "description": "Mã các gói trong câu trả lời trước, cách nhau bằng dấu phẩy"
+                  },
+                  "cau_hoi": {
+                    "type": "string",
+                    "description": "Câu hỏi của khách: ghi log thiếu dữ liệu và lưu số điện thoại khách gửi"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Khối dữ liệu tra cứu (văn bản)",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/goi/{ma}": {
+      "get": {
+        "operationId": "xem_goi",
+        "summary": "Xem một gói theo mã, đúng như chatbot đọc",
+        "parameters": [
+          {
+            "name": "ma",
+            "in": "path",
+            "required": true,
+            "description": "Mã gói, ví dụ 4484",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin gói",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/co_so/{ma}": {
+      "get": {
+        "operationId": "xem_co_so",
+        "summary": "Xem một cơ sở y tế theo mã, đúng như chatbot đọc",
+        "parameters": [
+          {
+            "name": "ma",
+            "in": "path",
+            "required": true,
+            "description": "Mã cơ sở, ví dụ 4",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin cơ sở",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
