@@ -14,7 +14,7 @@
 1299,Gói khám tổng quát tiêu chuẩn dành cho nam (SG2M),252,,,,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tong-quat-tieu-chuan-danh-cho-nam-sg2m-i1299,nam,tong_quat,,1
 1300,Gói khám tổng quát tiêu chuẩn dành cho nữ (SG2F),252,,,,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tong-quat-tieu-chuan-danh-cho-nu-sg2f-i1300,nu,tong_quat,,1
 1455,Gói khám tổng quát tiền hôn nhân Nam (SG8M),252,,,,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tong-quat-tien-hon-nhan-nam-sg8m-i1455,nam,tien_hon_nhan,,1
-1476,Gói khám dành cho trẻ em 5-15 tuổi (VG5),300,,,2260000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-danh-cho-tre-em-5-15-tuoi-vg5-i1476,,tre_em,,1
+1476,Gói khám dành cho trẻ em 5-15 tuổi (VG5),300,,,2620000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-danh-cho-tre-em-5-15-tuoi-vg5-i1476,,tre_em,,1
 1483,Gói khám tiền hôn nhân cho Nam (VG8M),300,,,4395000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tien-hon-nhan-cho-nam-vg8m-i1483,nam,tien_hon_nhan,,1
 1548,Gói khám Tầm soát nguy cơ đột quỵ (GH38),295,,,2540000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tam-soat-nguy-co-dot-quy-gh38-i1548,,chuyen_khoa,,1
 1559,Gói khám Toàn diện cho Trẻ em (từ 10 - 15 tuổi) (GH7.1),295,,,2500000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-toan-dien-cho-tre-em-tu-10--15-tuoi-gh71-i1559,,tre_em,,1
@@ -64,9 +64,9 @@
 2300,Gói khám tầm soát Ung thư đường tiêu hóa (NSG34),358,,,8765000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tam-soat-ung-thu-duong-tieu-hoa-nsg34-i2300,,ung_thu,,1
 2312,Gói khám sức khỏe tiền hôn nhân cho Nam (NHHM8M),160,,,1299000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-suc-khoe-tien-hon-nhan-cho-nam-nhhm8m-i2312,nam,tien_hon_nhan,,1
 2313,Gói khám sức khỏe tiền hôn nhân cho Nữ (NHHM8F),160,,,1599000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-suc-khoe-tien-hon-nhan-cho-nu-nhhm8f-i2313,nu,tien_hon_nhan,,1
-2316,Gói khám tổng quát nâng cao dành cho nữ (VP3F),372,,,5540000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tong-quat-nang-cao-danh-cho-nu-vp3f-i2316,nu,tong_quat,,1
-2318,Gói khám tổng quát tiêu chuẩn dành cho nữ (VP2F),372,,,2105000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tong-quat-tieu-chuan-danh-cho-nu-vp2f-i2318,nu,tong_quat,,1
-2319,Gói khám tổng quát tiêu chuẩn dành cho nam (VP2M),372,,,1955000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tong-quat-tieu-chuan-danh-cho-nam-vp2m-i2319,nam,tong_quat,,1
+2316,Gói khám tổng quát nâng cao dành cho nữ (VP3F),372,,,5540000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tong-quat-nang-cao-danh-cho-nu-vp3f-i2316,nu,tong_quat,,0
+2318,Gói khám tổng quát tiêu chuẩn dành cho nữ (VP2F),372,,,2105000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tong-quat-tieu-chuan-danh-cho-nu-vp2f-i2318,nu,tong_quat,,0
+2319,Gói khám tổng quát tiêu chuẩn dành cho nam (VP2M),372,,,1955000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tong-quat-tieu-chuan-danh-cho-nam-vp2m-i2319,nam,tong_quat,,0
 2350,Gói khám tổng quát tiền hôn nhân cho nữ (SG8F),252,,,,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tong-quat-tien-hon-nhan-cho-nu-sg8f-i2350,nu,tien_hon_nhan,,1
 2464,Gói khám tổng quát tiêu chuẩn dành cho nam (BS2M),7,,,2657000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tong-quat-tieu-chuan-danh-cho-nam-bs2m-i2464,nam,tong_quat,,1
 2466,Gói khám tổng quát tiêu chuẩn dành cho nữ (BS2F),7,,,3245000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-tong-quat-tieu-chuan-danh-cho-nu-bs2f-i2466,nu,tong_quat,,1
@@ -147,8 +147,8 @@
 4270,Khám sức khỏe chuyên sâu cho Nữ Trung niên (VG123F),300,,,4540000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/kham-suc-khoe-chuyen-sau-cho-nu-trung-nien-vg123f-i4270,nu,tong_quat,,1
 4483,Gói khám sức khỏe thi bằng lái xe tại Phòng khám Đa khoa Quốc Tế Việt Nga (VRR),925,,,390000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-suc-khoe-thi-bang-lai-xe-tai-phong-kham-da-khoa-quoc-te-viet-nga-vrr-i4483,,lai_xe,,1
 4484,Gói khám sức khỏe thi bằng lái xe tại Bệnh viện Đa khoa An Việt,4,,,350000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-suc-khoe-thi-bang-lai-xe-tai-benh-vien-da-khoa-an-viet-i4484,,lai_xe,,1
-4549,Gói Nam/Nữ khám cấp giấy phép lái xe (hành nghề lái xe ô tô) Tại Phòng khám Vigor Helth,300,,,1560000,1960000,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-namnu-kham-cap-giay-phep-lai-xe-hanh-nghe-lai-xe-o-to-tai-phong-kham-vigor-helth-i4549,,lai_xe,,1
-4550,Gói Nam/Nữ khám cấp giấy phép lái xe (không hành nghề lái xe ô tô) Tại Phòng khám Vigor Helth,300,,,1650000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-namnu-kham-cap-giay-phep-lai-xe-khong-hanh-nghe-lai-xe-o-to-tai-phong-kham-vigor-helth-i4550,,lai_xe,,1
+4549,Gói khám cấp giấy phép lái xe Tại Phòng khám Vigor Helth,300,,,800000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-cap-giay-phep-lai-xe-tai-phong-kham-vigor-helth-i4549,,lai_xe,,1
+4550,Gói Nam/Nữ khám cấp giấy phép lái xe (không hành nghề lái xe ô tô) Tại Phòng khám Vigor Helth,300,,,1650000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-namnu-kham-cap-giay-phep-lai-xe-khong-hanh-nghe-lai-xe-o-to-tai-phong-kham-vigor-helth-i4550,,lai_xe,,0
 4574,Gói khám sức khỏe Work Permit (CIH127),275,,,2250000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-suc-khoe-work-permit-cih127-i4574,,work_permit,,1
 4597,Gói khám kiểm tra dinh dưỡng cho trẻ,994,,,2530000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-kiem-tra-dinh-duong-cho-tre-i4597,,tre_em,,1
 4640,Gói khám sức khỏe tiền hôn nhân cho Nữ nâng cao (NHHM8F),160,,,2899000,,https://bookingcare.vn/dich-vu-y-te/kham-tong-quat/goi-kham-suc-khoe-tien-hon-nhan-cho-nu-nang-cao-nhhm8f-i4640,nu,tien_hon_nhan,,1

@@ -3462,11 +3462,12 @@
 4484,Khám lâm sàng,5,Khám chuyên khoa Sản (Nữ),
 4484,Xét nghiệm,1,Test nhanh chất gây nghiện trong nước tiểu,
 4484,Xét nghiệm,2,Test nồng độ cồn trong hơi thở,
-4549,Khám tổng quát,1,Khám tổng quát 5 chuyên khoa,
-4549,Khám tổng quát,2,Khám sản - Phụ khoa (áp dụng cho nữ),"Phát hiện các bệnh viêm nhiễm đường sinh dục, tư vấn sức khỏe sinh sản…"
+4549,Khám tổng quát,1,"Sinh hiệu, BMI",
+4549,Khám tổng quát,2,"Khám mắt, thị lực",
+4549,Khám tổng quát,3,Khám Tai Mũi Họng,Phát hiện một số bệnh lý Tai mũi họng
+4549,Khám tổng quát,4,Khám Nội Tổng Quát,Bác sĩ Nội Đa khoa khám và tư vấn
 4549,Chấn đoán hình ảnh và thăm dò chức năng,1,Điện tâm đồ (ECG),
-4549,Chấn đoán hình ảnh và thăm dò chức năng,2,Nồng độ cồn qua hơi thở,
-4549,Chấn đoán hình ảnh và thăm dò chức năng,3,Test Ma Túy GPLX theo Thông Tư 36/2024,
+4549,Chấn đoán hình ảnh và thăm dò chức năng,2,Test ma tuý 5 thành phần,
 4550,Khám tổng quát,1,Khám Nội Tổng Quát,Bác sĩ Nội Đa khoa khám và tư vấn
 4550,Khám tổng quát,2,Khám và tư vấn chuyên khoa Tai mũi họng,
 4550,Khám tổng quát,3,Khám và tư vấn chuyên khoa Mắt,
