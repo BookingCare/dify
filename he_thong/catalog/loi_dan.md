@@ -65,6 +65,10 @@ và muốn khám ở khu vực nào
 > Đã biết loại giấy, chưa biết khu vực.
 khách cần giấy khám {ten_giay} nhưng chưa nói khám ở đâu. {tra_loi_chung}Hỏi khách MỘT câu ngắn, thân thiện: muốn khám ở khu vực nào (hoặc cơ sở nào), để gợi ý gói đúng loại giấy kèm giá. Chưa gợi ý gói nào, không nêu giá gói, không đưa nút hay link nào.
 
+## giay_hoi_khu_vuc.lai_xe
+> Khám sức khỏe lái xe, chưa biết khu vực: bản 1 hỏi gộp mọi thông tin còn thiếu trong một câu.
+khách cần giấy khám sức khỏe lái xe nhưng chưa nói khám ở đâu. {tra_loi_chung}Hỏi khách đúng MỘT câu ngắn, gộp đủ các ý sau (theo đúng thứ tự, một dấu hỏi): {thieu}. Ví dụ: "Bạn muốn khám ở khu vực nào, thi bằng hạng nào và khoảng giá bạn mong muốn là bao nhiêu?". Chưa gợi ý gói nào, không nêu giá gói, không đưa nút hay link nào.
+
 ## giay_hoi_khu_vuc.co_luu_y
 > Có lưu ý chung của loại giấy (du_lieu/kien_thuc/giay_to/).
 Nếu khách hỏi hoặc nhắc tới mẫu giấy (như giấy khổ A3, Mẫu số 03...), khám những gì, giấy tờ, ảnh, thời hạn, xét nghiệm, hoặc ở lượt tiếp theo khách nói thêm về loại giấy mà vẫn chưa nêu khu vực, thì tóm tắt đầy đủ các điểm chính theo khối LƯU Ý CHUNG dưới đây (mẫu giấy theo độ tuổi như Mẫu số 03 cho người từ 18 tuổi theo Thông tư 25/2026/TT-BYT, các xét nghiệm bắt buộc, số bản, thời hạn 12 tháng); giá thì nói giá tùy gói ở từng nơi. Không nói "mình đang tìm gói" khi chưa biết khu vực.
@@ -200,6 +204,26 @@ Không hứa sẽ kiểm tra lỗi hay gọi lại; nút đặt lịch của gó
 > Khách hỏi đích danh một gói BookingCare chưa có, lượt này chưa nêu gói nào: thu lead ngay, kể cả khi đang hỏi lại khách.
 khách hỏi {ten} mà BookingCare chưa có thông tin. Nói ngắn là mình chưa có thông tin về {ten}; KHÔNG viết câu từ chối kiểu "nên chưa thể gợi ý gói hay nơi khám cụ thể cho bạn". Nếu GHI CHÚ khác bảo hỏi lại khách (nhu cầu, khu vực...) thì vẫn hỏi đúng câu đó để tìm gói gần nhất. KHÔNG nói BookingCare đã ghi nhận nhu cầu hay sẽ liên hệ (khách chưa điền form). Riêng lượt này BẮT BUỘC kết thúc câu trả lời bằng đúng các dòng sau, chép nguyên văn, kể cả khi GHI CHÚ khác nói không đưa nút hay link:
 {khoi_lien_he_ca_nhan}
+
+## khu_vuc_co_goi
+> Khách nêu khu vực cụ thể (phường/xã, quận cũ) và có gói ở đó.
+khách muốn khám ở khu vực {khu}. Các gói ở cơ sở thuộc khu vực này: {ten}. Giới thiệu các gói này trước và nói rõ là ở khu vực {khu}; gói khác (nếu nêu) thì nói là cùng tỉnh/thành, gần khu vực này, không gọi là ở {khu}. Không hỏi thêm phường/xã.
+
+## khu_vuc_chua_co_goi
+> Khách nêu khu vực cụ thể nhưng không có gói phù hợp ngay tại đó.
+khách muốn khám ở khu vực {khu} nhưng chưa có gói phù hợp ngay tại khu vực này. Nói ngắn điều đó, rồi giới thiệu các gói dưới đây như lựa chọn ở {tinh} (nêu địa chỉ để khách thấy gần hay xa). Không hỏi thêm phường/xã, không nói các gói này ở {khu}.
+
+## khoang_gia
+> Khách nêu khoảng giá và có gói trong khoảng đó.
+khách muốn gói có giá {khoang}: các gói dưới đây nằm trong khoảng giá này. Nêu đúng giá từng gói, có thể sắp từ giá thấp tới cao. Không tự tính chênh lệch.
+
+## ngoai_khoang_gia
+> Khách nêu khoảng giá có giá tối thiểu, không gói nào nằm đúng trong khoảng.
+chưa có gói phù hợp có giá {khoang}. Nói rõ điều này trước, rồi giới thiệu các gói dưới đây là các gói có giá gần nhất với khoảng khách muốn, nêu đúng giá từng gói. Không tự tính chênh lệch.
+
+## hang_bang
+> Khám lái xe, khách đã nêu hạng bằng.
+khách thi / đổi bằng lái hạng {hang}. Chỉ nói một gói dùng cho hạng nào khi giới thiệu, lưu ý giấy tờ, danh mục của gói hoặc LƯU Ý CHUNG ghi rõ; không ghi thì không tự khẳng định gói phù hợp hay không phù hợp hạng {hang}, chỉ nói mình chưa có thông tin gói dành riêng cho từng hạng.
 
 ## khong_hoi_lai
 > Lượt trước bot đã hỏi lại khách: lượt này gợi ý luôn.

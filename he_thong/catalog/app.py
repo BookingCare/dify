@@ -200,6 +200,14 @@ def money(v):
     return f"{v:,}".replace(",", ".") + "đ"
 
 
+def khoang_gia(tu, den):
+    """The price range the customer asked for, in words: "từ 1.000.000đ đến 2.000.000đ", "dưới ...", "từ ... trở lên"."""
+    tu, den = int(tu or 0), int(den or 0)
+    if tu and den:
+        return f"từ {money(tu)} đến {money(den)}"
+    return f"dưới {money(den)}" if den else (f"từ {money(tu)} trở lên" if tu else "")
+
+
 def read_csv(name):
     path = os.path.join(DATA_DIR, name)
     if not os.path.exists(path):
@@ -257,7 +265,8 @@ def schedule_text(rows):
 
 
 NEED_KEYS = {"goi_nhac_toi", "thu_tu", "cac_goi_truoc", "co_so_nhac_toi", "hoi_co_so", "can", "gioi_tinh", "tinh",
-             "phuong_xa", "tuoi", "trieu_chung", "ca_nhan", "cac_loai_giay", "ngan_sach", "muc_dich", "tu_khoa", "ma_goi", "ma_co_so"}
+             "phuong_xa", "tuoi", "trieu_chung", "ca_nhan", "cac_loai_giay", "ngan_sach", "ngan_sach_tu", "hang_bang",
+             "muc_dich", "tu_khoa", "ma_goi", "ma_co_so"}
 
 
 _log_lock = threading.Lock()
@@ -942,6 +951,8 @@ class Catalog:
         special-purpose packages are kept, since the customer asked for everything at that place)."""
         gender, province = need.get("gioi_tinh") or "", province_name(need.get("tinh"))
         budget = int(need.get("ngan_sach") or 0) * budget_factor
+        # lower bound of a price range ("trên 3 triệu", "từ 1 đến 2 triệu"); a looser search lowers it too
+        budget_min = int(need.get("ngan_sach_tu") or 0) / budget_factor
         purpose = need.get("muc_dich") or ""
         tuoi = int(need.get("tuoi") or 0)
         married = bool(need.get("_da_ket_hon"))
@@ -965,6 +976,8 @@ class Catalog:
                 continue  # married customer: no pre-marriage / singles package
             if budget and g["gia_tu"] > budget:
                 continue
+            if budget_min and (not g["gia_tu"] or (g.get("gia_den") or g["gia_tu"]) < budget_min):
+                continue  # below the range (a package without a published price is not known to be in it)
             name_acc = set(re.findall(r"\w+", unicodedata.normalize("NFC", g.get("ten", "")).lower()))
             in_name = [k for k, a in zip(keywords, accented) if k <= g["name_words"]
                        and (a <= name_acc or a == k)]  # a keyword written without marks still matches by norm
@@ -984,10 +997,22 @@ class Catalog:
             score += 1 if gender and g.get("gioi_tinh") == gender else 0
             # gender / need not known yet: singles and cancer screening packages come after all the others
             later = int(not gender and not in_name and bool(g.get("doc_than") or ("ung_thu" in g["tags"] and purpose != "ung_thu")))
-            if ward and g["fac"] and ward in phuong_cua_co_so(g["fac"].get("phuong_xa")):  # nearest first
+            if self.o_khu_vuc(g, ward, need.get("_quan")):  # in the ward / old district the customer named first
                 score += 2
             scored.append((later, -score, g["gia_tu"], m))
         return [m for *_, m in sorted(scored)]
+
+    @staticmethod
+    def o_khu_vuc(g, ward, quan):
+        """The package's facility is in the ward (normalized, its phuong_xa or address) or one of the old districts
+        (normalized, in its address) the customer named."""
+        fac = g.get("fac") or {}
+        if not fac:
+            return False
+        addr = " " + " ".join(re.findall(r"\w+", norm(fac.get("dia_chi", "")))) + " "
+        if ward and (ward in phuong_cua_co_so(fac.get("phuong_xa")) or f" {ward} " in addr):
+            return True
+        return any(f" {a} " in addr for a in quan or [])
 
     # ---------- lookup: read the request, understand the turn, pick ONE situation, answer it
     def tra_cuu(self, raw):
@@ -1074,6 +1099,9 @@ class Catalog:
             return None
         need["_nguoi_dung"] = user
         need["_hoi_thoai"] = conversation
+        # old districts the customer names this turn or kept as the area ("Cầu Giấy", "quận 3"): packages there first
+        area_text = " " + " ".join(re.findall(r"\w+", norm(f"{need.get('phuong_xa') or ''} {question}"))) + " "
+        need["_quan"] = [a for areas in QUAN_CU.values() for a in areas if f" {a} " in area_text]
         if not province_name(need.get("tinh")):
             # "Hà Đông", "quận Tân Phú", "Thủ Đức": the old district tells the province
             area = province_of_area(str(need.get("phuong_xa") or "")) or province_of_area(question)
@@ -1365,8 +1393,17 @@ class Catalog:
         notes = self.luu_y_giay.get(t.purpose) or []
         block = ("=== LƯU Ý CHUNG: GIẤY KHÁM " + LOAI_GIAY_TEN[t.purpose].upper() + " ===\n" +
                  "\n\n".join(f"{h}:\n{txt}" for h, txt in notes)) if notes else ""
-        note = self.ghi_chu("giay_hoi_khu_vuc", ten_giay=LOAI_GIAY_TEN[t.purpose],
-                            tra_loi_chung=self.ld("giay_hoi_khu_vuc.co_luu_y") + " " if block else "")
+        tra_loi_chung = self.ld("giay_hoi_khu_vuc.co_luu_y") + " " if block else ""
+        if t.purpose == "lai_xe":
+            # driving licence (version 1): every missing detail is asked in the same single question
+            thieu = ["khám ở khu vực nào (tỉnh/thành, có thể kèm quận/phường)"]
+            if not t.need.get("hang_bang"):
+                thieu.append("thi / đổi bằng lái hạng nào (A1, A, B, C...)")
+            if not (t.need.get("ngan_sach") or t.need.get("ngan_sach_tu")):
+                thieu.append("khoảng giá mong muốn (nếu có)")
+            note = self.ghi_chu("giay_hoi_khu_vuc.lai_xe", tra_loi_chung=tra_loi_chung, thieu="; ".join(thieu))
+        else:
+            note = self.ghi_chu("giay_hoi_khu_vuc", ten_giay=LOAI_GIAY_TEN[t.purpose], tra_loi_chung=tra_loi_chung)
         return self.ket_qua("giay_hoi_khu_vuc", [], [], [note, block])
 
     def tl_hoi_nhu_cau(self, t):
@@ -1467,7 +1504,12 @@ class Catalog:
             # a named facility limits the suggestions to that place (and its branches)
             at = self.facility_family(named_fac) if named_fac else None
             suggested, note = loc_items(at)
-            if not suggested and need.get("ngan_sach"):
+            if not suggested and need.get("ngan_sach_tu"):
+                # nothing in the range: the packages closest to it (bounds loosened by 30%)
+                suggested = self.loc(need, budget_factor=1.3, at=at)
+                if suggested:
+                    note = self.ghi_chu("ngoai_khoang_gia", khoang=khoang_gia(need.get("ngan_sach_tu"), need.get("ngan_sach")))
+            elif not suggested and need.get("ngan_sach"):
                 suggested = self.loc(need, budget_factor=1.3, at=at)
                 if suggested:
                     note = self.ghi_chu("vuot_ngan_sach")
@@ -1545,6 +1587,19 @@ class Catalog:
                                                 if known else "khách cần thì cho biết khu vực và nhu cầu để được gợi ý gói")))
         if note:
             parts.append(note)
+        if suggested and ids and not listing and not named_fac:
+            ward = norm(re.sub(r"^(phường|xã|p\.)\s*", "", need.get("phuong_xa") or "", flags=re.I))
+            quan = need.get("_quan") or []
+            if ward or quan:
+                khu = str(need.get("phuong_xa") or "") or ", ".join(quan)
+                in_area = [i for i in ids if self.o_khu_vuc(self.goi[i], ward, quan)]
+                parts.append(self.ghi_chu("khu_vuc_co_goi", khu=khu, ten="; ".join(self.goi[i]["ten"] for i in in_area))
+                             if in_area else self.ghi_chu("khu_vuc_chua_co_goi", khu=khu,
+                                                          tinh=province_name(need.get("tinh")) or "tỉnh/thành này"))
+            if (need.get("ngan_sach_tu") or need.get("ngan_sach")) and not note:
+                parts.append(self.ghi_chu("khoang_gia", khoang=khoang_gia(need.get("ngan_sach_tu"), need.get("ngan_sach"))))
+        if purpose == "lai_xe" and need.get("hang_bang") and ids:
+            parts.append(self.ghi_chu("hang_bang", hang=str(need["hang_bang"])))
         parts += [self.render_goi(self.goi[i], phan) for i in ids]
         parts += [self.render_co_so(self.co_so[f]) for f in fac]
         if HOI_TT25.search(question) and self.render_tt25():
