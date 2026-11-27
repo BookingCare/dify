@@ -10,7 +10,7 @@ Nội dung dưới đây chép từ Thông tư 36/2024/TT-BYT (hiệu lực 01/0
 
 ## Hạng bằng áp dụng
 
-Giấy khám sức khỏe lái xe theo Thông tư 36/2024/TT-BYT, không dùng mẫu giấy khám đi làm. Tiêu chuẩn sức khỏe chia 3 nhóm theo hạng giấy phép lái xe:
+Giấy khám sức khỏe lái xe theo Thông tư 36/2024/TT-BYT. Tiêu chuẩn sức khỏe chia 3 nhóm theo hạng giấy phép lái xe:
 
 - Nhóm 1: hạng A1, B1 và người điều khiển xe máy chuyên dùng.
 - Nhóm 2: hạng A và B.
