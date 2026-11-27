@@ -1068,7 +1068,7 @@ class Catalog:
         else:
             gia = "chưa có giá (khách gọi cơ sở để hỏi)"
         lx = self.duoc_kham_lai_xe(r["co_so"])
-        lines = [f"=== GÓI THAM KHẢO {r['ma']} (cơ sở chưa hợp tác với BookingCare: không đặt lịch qua BookingCare) ===",
+        lines = [f"=== GÓI THAM KHẢO {r['ma']} (không có nút đặt lịch) ===",
                  f"Tên gói: {r['ten_goi']}", f"Nơi khám: {r['co_so']}", f"Địa chỉ: {r['dia_chi']}",
                  f"Tỉnh/thành: {r['tinh']}", f"Giá tham khảo: {gia}",
                  f"Đối tượng / hạng bằng: {r['doi_tuong']}", f"Danh mục khám: {r['danh_muc']}",
