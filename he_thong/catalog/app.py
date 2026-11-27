@@ -201,6 +201,16 @@ def money(v):
     return f"{v:,}".replace(",", ".") + "đ"
 
 
+# words every facility name has: left out when matching a reference facility by name
+CHUNG_TEN = {"benh", "vien", "phong", "kham", "da", "khoa", "pkdk", "bv", "bvdk", "dk", "trung", "tam", "y", "te",
+             "quoc", "cong", "ty", "tnhh", "chi", "nhanh", "co", "so", "he", "thong", "cs", "pk"}
+
+
+def ten_co_so(name):
+    """The distinctive words of a facility name, normalized ("Bệnh viện Đa khoa MEDLATEC" -> {"medlatec"})."""
+    return set(re.findall(r"\w+", norm(name))) - CHUNG_TEN
+
+
 def khoang_gia(tu, den):
     """The price range the customer asked for, in words: "từ 1.000.000đ đến 2.000.000đ", "dưới ...", "từ ... trở lên"."""
     tu, den = int(tu or 0), int(den or 0)
@@ -587,6 +597,20 @@ class Catalog:
             g["doc_than"] = bool(CHO_DOC_THAN.search(intro)) and not DA_KET_HON.search(intro)
         # general notes per document type (kien_thuc/giay_to/<loai>.md); a package's own notes win over them
         self.luu_y_giay = {t: read_md("kien_thuc/giay_to", t) or [] for t in LOAI_GIAY}
+        # driving-licence packages of facilities BookingCare does not partner with (lai_xe/goi_tham_khao.csv, from
+        # he_thong/scripts/nhap_lai_xe.py): reference only, shown after the partner packages; and the facilities
+        # the Department of Health lists for driving check-ups (lai_xe/co_so_duoc_kham.csv)
+        self.goi_tk, self.co_so_lx = [], []
+        path = os.path.join(DATA_DIR, "lai_xe", "goi_tham_khao.csv")
+        if os.path.exists(path):
+            with open(path, encoding="utf-8-sig", newline="") as f:
+                for r in csv.DictReader(f):
+                    self.goi_tk.append(dict(r, gia_tu=int(r.get("gia_tu") or 0), gia_den=int(r.get("gia_den") or 0),
+                                            _ten=ten_co_so(r["co_so"]), _dc=" " + " ".join(re.findall(r"\w+", norm(r["dia_chi"]))) + " "))
+        path = os.path.join(DATA_DIR, "lai_xe", "co_so_duoc_kham.csv")
+        if os.path.exists(path):
+            with open(path, encoding="utf-8-sig", newline="") as f:
+                self.co_so_lx = [dict(r, _ten=ten_co_so(r["ten"])) for r in csv.DictReader(f)]
         for t in sorted(LOAI_GIAY):
             if any(t in g["tags"] for g in self.goi.values()) and not self.luu_y_giay[t]:
                 self.bad("CẢNH BÁO", f"kien_thuc/giay_to/{t}.md", f"chưa có lưu ý chung cho giấy khám {LOAI_GIAY_TEN[t]}")
@@ -1003,6 +1027,59 @@ class Catalog:
             scored.append((later, -score, g["gia_tu"], m))
         return [m for *_, m in sorted(scored)]
 
+    def loc_tham_khao(self, need):
+        """Reference driving-licence packages in the customer's province and price range: those in the ward / old
+        district the customer named first, then by price (no published price last)."""
+        province = province_name(need.get("tinh"))
+        if not province:
+            return []
+        lo, hi = int(need.get("ngan_sach_tu") or 0), int(need.get("ngan_sach") or 0)
+        ward = norm(re.sub(r"^(phường|xã|p\.)\s*", "", need.get("phuong_xa") or "", flags=re.I))
+        quan = need.get("_quan") or []
+        out = []
+        for r in self.goi_tk:
+            if norm(r["tinh"]) != norm(province):
+                continue
+            if (lo or hi) and not r["gia_tu"]:
+                continue  # a price range asked: only places with a known price
+            if (hi and r["gia_tu"] > hi) or (lo and (r["gia_den"] or r["gia_tu"]) < lo):
+                continue
+            area = bool(ward and f" {ward} " in r["_dc"]) or any(f" {a} " in r["_dc"] for a in quan)
+            out.append(((not area, not r["gia_tu"], r["gia_tu"], r["ma"]), r))
+        return [r for _, r in sorted(out, key=lambda x: x[0])]
+
+    def tham_khao_theo_ten(self, names):
+        """Reference packages of the facilities named (a name matches when the distinctive words of one are all
+        in the other)."""
+        keys = [k for k in (ten_co_so(n) for n in names if n) if k]
+        return [r for r in self.goi_tk if r["_ten"] and any(k <= r["_ten"] or r["_ten"] <= k for k in keys)]
+
+    def duoc_kham_lai_xe(self, name):
+        k = ten_co_so(name)
+        return next((r for r in self.co_so_lx if k and r["_ten"] and (k <= r["_ten"] or r["_ten"] <= k)), None)
+
+    def render_tham_khao(self, r):
+        """A reference package as the answer step reads it (no booking link: BookingCare does not partner here)."""
+        if r["gia_tu"]:
+            gia = f"{money(r['gia_tu'])} – {money(r['gia_den'])}" if r["gia_den"] else money(r["gia_tu"])
+            # the sheet's own wording is kept only when it changes what the price covers ("chưa gồm XN", "phí khám")
+            if re.search(r"chưa gồm|chua gom|phí khám|phi kham|trọn gói|tron goi", r.get("gia_ghi") or "", re.I):
+                gia += f" ({r['gia_ghi']})"
+        else:
+            gia = "chưa có giá (khách gọi cơ sở để hỏi)"
+        lx = self.duoc_kham_lai_xe(r["co_so"])
+        lines = [f"=== GÓI THAM KHẢO {r['ma']} (cơ sở chưa hợp tác với BookingCare: không đặt lịch qua BookingCare) ===",
+                 f"Tên gói: {r['ten_goi']}", f"Nơi khám: {r['co_so']}", f"Địa chỉ: {r['dia_chi']}",
+                 f"Tỉnh/thành: {r['tinh']}", f"Giá tham khảo: {gia}",
+                 f"Đối tượng / hạng bằng: {r['doi_tuong']}", f"Danh mục khám: {r['danh_muc']}",
+                 f"Lưu ý khi đi khám: {r['luu_y']}", f"Giờ làm việc: {r.get('gio_lam_viec') or 'KHÔNG CÓ TRONG DỮ LIỆU'}",
+                 f"Điện thoại của cơ sở: {r.get('dien_thoai') or 'KHÔNG CÓ TRONG DỮ LIỆU'}"]
+        if r.get("ghi_chu"):
+            lines.append(f"Ghi chú: {r['ghi_chu']}")
+        if lx:
+            lines.append(f"Danh sách Sở Y tế: có tên trong danh sách cơ sở đủ điều kiện khám sức khỏe lái xe ({lx['tinh']})")
+        return "\n".join(lines)
+
     @staticmethod
     def o_khu_vuc(g, ward, quan):
         """The package's facility is in the ward (normalized, its phuong_xa or address) or one of the old districts
@@ -1052,6 +1129,15 @@ class Catalog:
         if (t.unresolved and out.startswith("MÃ GÓI ĐÃ TRA: không có") and not now.startswith(("doanh_nghiep", "bv_cong"))
                 and now != "khong_doc_duoc" and KHOI_LIEN_HE_CA_NHAN not in out + "".join(extra)):
             extra.append(self.ghi_chu("goi_khong_co_hien_form", ten="; ".join(f'"{u}"' for u in t.unresolved)))
+        # driving licence at a place BookingCare does not partner with for it: that place's own reference package
+        if t.purpose == "lai_xe" and self.goi_tk:
+            names = ([self.co_so[f]["ten"] for f in getattr(t, "named_fac", None) or [] if f in self.co_so]
+                     + [str(x) for x in t.need.get("co_so_nhac_toi") or []] + [str(x) for x in t.unresolved or []])
+            shown = set(re.findall(r"GÓI THAM KHẢO (TK\d+)", out))
+            named = [r for r in self.tham_khao_theo_ten(names) if r["ma"] not in shown]
+            if named:
+                extra.append(self.ghi_chu("co_so_lai_xe_tham_khao", ten=", ".join(dict.fromkeys(r["co_so"] for r in named))))
+                out += "\n\n" + "\n\n".join(self.render_tham_khao(r) for r in named)
         if extra:
             head, _, body = out.partition("\n\n")
             out = "\n\n".join([head] + extra + [body])
@@ -1333,7 +1419,16 @@ class Catalog:
         has_ellipsis = "..." in t.question or "…" in t.question
         kinds_list = [LOAI_GIAY_TEN[k] for k in t.kinds]
         kinds = ", ".join(kinds_list) + (", ..." if has_ellipsis else "")
-        return self.ket_qua("giay_nhieu_loai_hoi_khu_vuc", [], [], [self.ghi_chu("giay_nhieu_loai_hoi_khu_vuc", loai_giay=kinds)])
+        blocks = self.khoi_luu_y_giay(t.kinds)
+        parts = [self.ghi_chu("giay_nhieu_loai_hoi_khu_vuc", loai_giay=kinds)]
+        if blocks:  # "dùng giấy khám xin việc làm bằng lái được không?": answered from the notes before asking
+            parts.append(self.ghi_chu("giay_nhieu_loai.luu_y"))
+        return self.ket_qua("giay_nhieu_loai_hoi_khu_vuc", [], [], parts + blocks)
+
+    def khoi_luu_y_giay(self, kinds):
+        """The general notes block (kien_thuc/giay_to/<loai>.md) of each document type that has one."""
+        return ["=== LƯU Ý CHUNG: GIẤY KHÁM " + LOAI_GIAY_TEN[k].upper() + " ===\n"
+                + "\n\n".join(f"{h}:\n{txt}" for h, txt in self.luu_y_giay[k]) for k in kinds if self.luu_y_giay.get(k)]
 
     def tl_giay_nhieu_loai(self, t):
         """The packages of each document type in the province the customer gave."""
@@ -1347,7 +1442,9 @@ class Catalog:
         thieu = " " + self.ld("giay_nhieu_loai.thieu", thieu_giay=", ".join(missing), tinh=t.where) if missing else ""
         note = self.ghi_chu("giay_nhieu_loai", loai_giay="; ".join(LOAI_GIAY_TEN[k] for k in t.kinds), tinh=t.where,
                             thieu=thieu)
-        return self.ket_qua("giay_nhieu_loai", ids, [], [note] + [self.render_goi(self.goi[i], []) for i in ids])
+        blocks = self.khoi_luu_y_giay(t.kinds)
+        extra = [self.ghi_chu("giay_nhieu_loai.luu_y")] if blocks else []
+        return self.ket_qua("giay_nhieu_loai", ids, [], [note] + extra + [self.render_goi(self.goi[i], []) for i in ids] + blocks)
 
     def tl_hoi_doi_tuong(self, t):
         # ask everything the next step needs in one question: who it is for and, if unknown, where
@@ -1468,6 +1565,7 @@ class Catalog:
         need, question, prev = t.need, t.question, t.prev
         picked, named_fac, cong, purpose = t.picked, t.named_fac, t.cong, t.purpose
         note, note_key, suggested, listing = "", "", [], False
+        tk = []  # reference driving-licence packages (non-partner facilities) filling up the list
 
         def loc_items(at):
             """loc(), but when no package has the asked item ('lấy máu'), the packages without it, with a note:
@@ -1511,7 +1609,15 @@ class Catalog:
             # a named facility limits the suggestions to that place (and its branches)
             at = self.facility_family(named_fac) if named_fac else None
             suggested, note = loc_items(at)
-            if not suggested and need.get("ngan_sach_tu"):
+            if purpose == "lai_xe" and at is None:
+                # partner packages first; when they are fewer than the list holds, reference places fill it up
+                tk = self.loc_tham_khao(need)[:max(0, MAX_GOI - len(suggested))]
+            if tk and not suggested:
+                note_key, note = "lai_xe_chi_tham_khao", self.ghi_chu(
+                    "lai_xe_chi_tham_khao", tinh=province_name(need.get("tinh")),
+                    khoang=(" có giá " + khoang_gia(need.get("ngan_sach_tu"), need.get("ngan_sach"))
+                            if need.get("ngan_sach_tu") or need.get("ngan_sach") else ""))
+            elif not suggested and need.get("ngan_sach_tu"):
                 # nothing in the range: the packages closest to it (bounds loosened by 30%)
                 suggested = self.loc(need, budget_factor=1.3, at=at)
                 if suggested:
@@ -1520,7 +1626,7 @@ class Catalog:
                 suggested = self.loc(need, budget_factor=1.3, at=at)
                 if suggested:
                     note = self.ghi_chu("vuot_ngan_sach")
-            if not suggested and purpose in LOAI_GIAY:
+            if not suggested and not tk and purpose in LOAI_GIAY:
                 # no package for this document type in the customer's area: say so; packages in another
                 # province are not offered (the customer chose where to go), only the BookingCare contacts
                 ten, where = LOAI_GIAY_TEN[purpose], province_name(need.get("tinh"))
@@ -1594,20 +1700,30 @@ class Catalog:
                                                 if known else "khách cần thì cho biết khu vực và nhu cầu để được gợi ý gói")))
         if note:
             parts.append(note)
-        if suggested and ids and not listing and not named_fac:
+        if (suggested or tk) and not listing and not named_fac:
             ward = norm(re.sub(r"^(phường|xã|p\.)\s*", "", need.get("phuong_xa") or "", flags=re.I))
             quan = need.get("_quan") or []
             if ward or quan:
                 khu = str(need.get("phuong_xa") or "") or ", ".join(quan)
-                in_area = [i for i in ids if self.o_khu_vuc(self.goi[i], ward, quan)]
-                parts.append(self.ghi_chu("khu_vuc_co_goi", khu=khu, ten="; ".join(self.goi[i]["ten"] for i in in_area))
+                in_area = [self.goi[i]["ten"] for i in ids if self.o_khu_vuc(self.goi[i], ward, quan)]
+                in_area += [f"{r['ten_goi']} tại {r['co_so']} (tham khảo)" for r in tk  # reference places count too
+                            if (ward and f" {ward} " in r["_dc"]) or any(f" {a} " in r["_dc"] for a in quan)]
+                parts.append(self.ghi_chu("khu_vuc_co_goi", khu=khu, ten="; ".join(in_area))
                              if in_area else self.ghi_chu("khu_vuc_chua_co_goi", khu=khu,
                                                           tinh=province_name(need.get("tinh")) or "tỉnh/thành này"))
-            if (need.get("ngan_sach_tu") or need.get("ngan_sach")) and not note:
-                parts.append(self.ghi_chu("khoang_gia", khoang=khoang_gia(need.get("ngan_sach_tu"), need.get("ngan_sach"))))
+            if (need.get("ngan_sach_tu") or need.get("ngan_sach")) and not note and ids:
+                # a price range: the packages in the area first, then from the lowest price, in the order given
+                w, q = ward, need.get("_quan") or []
+                ids = sorted(ids, key=lambda i: (not self.o_khu_vuc(self.goi[i], w, q), self.goi[i]["gia_tu"]))
+                parts.append(self.ghi_chu("khoang_gia", khoang=khoang_gia(need.get("ngan_sach_tu"), need.get("ngan_sach")),
+                                          thu_tu="; ".join(f"{self.goi[i]['ten']} ({self.gia(self.goi[i])})" for i in ids)))
         if purpose == "lai_xe" and need.get("hang_bang") and ids:
             parts.append(self.ghi_chu("hang_bang", hang=str(need["hang_bang"])))
         parts += [self.render_goi(self.goi[i], phan) for i in ids]
+        if tk:
+            if ids:
+                parts.append(self.ghi_chu("lai_xe_them_tham_khao"))
+            parts += [self.render_tham_khao(r) for r in tk]
         parts += [self.render_co_so(self.co_so[f]) for f in fac]
         if HOI_TT25.search(question) and self.render_tt25():
             parts.append(self.render_tt25())

@@ -97,6 +97,10 @@ BookingCare chưa có thông tin về {ten}. Nói rõ điều này, không đoá
 > Hai loại giấy trở lên, đã có khu vực: gói của từng loại.
 khách cần giấy khám {loai_giay} ở {tinh}. Mỗi loại giấy có gói riêng: trình bày theo từng loại giấy (một tiêu đề cho mỗi loại, dựa vào dòng "Loại giấy khám" của gói), mỗi gói ghi tên, nơi khám, giá, link đặt lịch. Cuối câu trả lời hỏi khách cần cả hai hay một loại.{thieu}
 
+## giay_nhieu_loai.luu_y
+> Nhiều loại giấy: khách có thể đang hỏi một điều về loại giấy (dùng thay được không, thời hạn, khám gì).
+nếu câu hỏi của khách có một ý về loại giấy (ví dụ dùng giấy khám xin việc thay giấy khám lái xe được không, giấy có giá trị bao lâu, khám những gì), trả lời ngắn ý đó TRƯỚC theo khối LƯU Ý CHUNG tương ứng bên dưới (kể cả phần hỏi đáp), rồi mới đặt câu hỏi theo GHI CHÚ trên. Câu hỏi đó vẫn chép nguyên văn. Không nói "chưa có thông tin" khi khối LƯU Ý CHUNG có câu trả lời.
+
 ## giay_nhieu_loai.thieu
 Chưa có gói {thieu_giay} ở {tinh}: nói rõ điều này. {thu_lead}
 
@@ -200,7 +204,7 @@ khách hỏi {loai_kham} tại bệnh viện công ({ten}). Hiện BookingCare c
 > Khách xin số điện thoại, muốn gặp người tư vấn, hoặc báo không đặt được lịch.
 khách cần liên hệ (xin số, muốn gặp người tư vấn, hoặc báo lỗi khi đặt lịch). Khách hỏi số của một cơ sở cụ thể thì đưa điện thoại trong khối CƠ SỞ Y TẾ của cơ sở đó (nếu có). Luôn kèm kênh của BookingCare, chép nguyên văn các dòng sau; không nói "chưa có số điện thoại" hay "chưa có thông tin liên hệ":
 {khoi_lien_he_ca_nhan}
-Không hứa sẽ kiểm tra lỗi hay gọi lại; nút đặt lịch của gói (nếu có) vẫn dùng được.
+Số BookingCare và Zalo chỉ xuất hiện trong các dòng trên: không viết thêm câu nêu số hay Zalo ở chỗ khác (ví dụ không mở đầu bằng "Bạn có thể liên hệ BookingCare qua số ..."). Không hứa sẽ kiểm tra lỗi hay gọi lại; nút đặt lịch của gói (nếu có) vẫn dùng được.
 
 ## goi_khong_co_hien_form
 > Khách hỏi đích danh một gói BookingCare chưa có, lượt này chưa nêu gói nào: thu lead ngay, kể cả khi đang hỏi lại khách.
@@ -209,7 +213,7 @@ khách hỏi {ten} mà BookingCare chưa có thông tin. Nói ngắn là mình c
 
 ## khu_vuc_co_goi
 > Khách nêu khu vực cụ thể (phường/xã, quận cũ) và có gói ở đó.
-khách muốn khám ở khu vực {khu}. Các gói ở cơ sở thuộc khu vực này: {ten}. Giới thiệu các gói này trước và nói rõ là ở khu vực {khu}; gói khác (nếu nêu) thì nói là cùng tỉnh/thành, gần khu vực này, không gọi là ở {khu}. Không hỏi thêm phường/xã.
+khách muốn khám ở khu vực {khu}. Các gói ở cơ sở thuộc khu vực này: {ten}. Giới thiệu các gói này trước và nói rõ là ở khu vực {khu}; gói khác (nếu nêu) thì chỉ nói là cùng tỉnh/thành, kèm địa chỉ; không gọi là ở {khu} và không nói là "gần" khu vực này (mình không có thông tin khoảng cách). Không hỏi thêm phường/xã.
 
 ## khu_vuc_chua_co_goi
 > Khách nêu khu vực cụ thể nhưng không có gói phù hợp ngay tại đó.
@@ -217,7 +221,7 @@ khách muốn khám ở khu vực {khu} nhưng chưa có gói phù hợp ngay t�
 
 ## khoang_gia
 > Khách nêu khoảng giá và có gói trong khoảng đó.
-khách muốn gói có giá {khoang}: các gói dưới đây nằm trong khoảng giá này. Nêu đúng giá từng gói, có thể sắp từ giá thấp tới cao. Không tự tính chênh lệch.
+khách muốn gói có giá {khoang}: các gói dưới đây nằm trong khoảng giá này. Trình bày ĐÚNG thứ tự sau (khu vực khách nêu trước, rồi giá từ thấp tới cao): {thu_tu}. Nêu đúng giá từng gói. Không tự tính chênh lệch.
 
 ## ngoai_khoang_gia
 > Khách nêu khoảng giá có giá tối thiểu, không gói nào nằm đúng trong khoảng.
@@ -226,6 +230,18 @@ chưa có gói phù hợp có giá {khoang}. Nói rõ điều này trước, r�
 ## hang_bang
 > Khám lái xe, khách đã nêu hạng bằng.
 khách thi / đổi bằng lái hạng {hang}. Chỉ nói một gói dùng cho hạng nào khi giới thiệu, lưu ý giấy tờ, danh mục của gói hoặc LƯU Ý CHUNG ghi rõ; không ghi thì không tự khẳng định gói phù hợp hay không phù hợp hạng {hang}, chỉ nói mình chưa có thông tin gói dành riêng cho từng hạng.
+
+## lai_xe_them_tham_khao
+> Khám lái xe: gói đặt được qua BookingCare chưa đủ, thêm gói của cơ sở chưa hợp tác để tham khảo.
+sau các gói đặt được qua BookingCare (có nút đặt lịch), giới thiệu thêm các GÓI THAM KHẢO dưới đây như lựa chọn khác, đúng thứ tự dưới đây. Nói rõ đây là các cơ sở BookingCare chưa hợp tác nên chưa đặt lịch qua BookingCare được. Mỗi nơi: tên cơ sở, địa chỉ, giá tham khảo (không có giá thì ghi "chưa có giá, bạn gọi cơ sở để hỏi"), điện thoại và giờ làm việc của cơ sở. Giá chỉ ghi ngắn là giá tham khảo (ví dụ "Giá tham khảo: 370.000đ"); KHÔNG thêm câu giải thích về giá (nguồn giá, ai xác nhận, cơ sở đã công bố giá hay chưa, "cơ sở sẽ xác nhận khi bạn liên hệ"). Không đưa nút hay link đặt lịch cho gói tham khảo, không tự tạo link.
+
+## lai_xe_chi_tham_khao
+> Khám lái xe: không có gói đặt được qua BookingCare phù hợp, chỉ có gói tham khảo.
+BookingCare chưa có gói khám sức khỏe lái xe đặt lịch được ở {tinh}{khoang}. Nói ngắn điều đó, rồi giới thiệu các GÓI THAM KHẢO dưới đây, đúng thứ tự: nói rõ đây là các cơ sở BookingCare chưa hợp tác nên chưa đặt lịch qua BookingCare được; mỗi nơi nêu tên cơ sở, địa chỉ, giá tham khảo (không có giá thì ghi "chưa có giá, bạn gọi cơ sở để hỏi"), điện thoại và giờ làm việc của cơ sở. Giá chỉ ghi ngắn là giá tham khảo (ví dụ "Giá tham khảo: 370.000đ"); KHÔNG thêm câu giải thích về giá (nguồn giá, ai xác nhận, cơ sở đã công bố giá hay chưa, "cơ sở sẽ xác nhận khi bạn liên hệ"). Không đưa nút hay link đặt lịch cho các gói này. {thu_lead}
+
+## co_so_lai_xe_tham_khao
+> Khám lái xe, khách nêu một cơ sở chưa hợp tác khám lái xe với BookingCare có trong dữ liệu tham khảo.
+khách hỏi khám lái xe tại {ten}: BookingCare chưa hỗ trợ đặt lịch khám lái xe tại đây, nhưng có thông tin tham khảo của cơ sở trong khối GÓI THAM KHẢO bên dưới. Trả lời đúng câu khách hỏi theo khối đó (giá tham khảo, danh mục, lưu ý, giờ làm việc, điện thoại, địa chỉ); dùng khối này thay cho câu "chưa có thông tin" về cơ sở. Giá chỉ ghi ngắn là giá tham khảo (ví dụ "Giá tham khảo: 370.000đ"); KHÔNG thêm câu giải thích về giá (nguồn giá, ai xác nhận, cơ sở đã công bố giá hay chưa, "cơ sở sẽ xác nhận khi bạn liên hệ"). Không đưa nút hay link đặt lịch cho cơ sở này. Có gói đặt được qua BookingCare trong khối khác thì có thể giới thiệu thêm sau.
 
 ## khong_hoi_lai
 > Lượt trước bot đã hỏi lại khách: lượt này gợi ý luôn.
