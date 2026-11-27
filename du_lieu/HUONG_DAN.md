@@ -136,7 +136,7 @@ Cơ sở nhận khám doanh nghiệp qua BookingCare. Khách hỏi khám cho cô
 
 Danh mục gói và lưu ý khác (ưu đãi, lấy máu tại công ty, thời gian khám...) của từng cơ sở: file `kien_thuc/doanh_nghiep/co_so/<ma_co_so>.md`, hai mục `## Danh mục gói khám doanh nghiệp` và `## Lưu ý khác`. Chatbot chỉ đưa khi khách nêu tên cơ sở hoặc hỏi về danh mục, hóa đơn, lấy máu, ưu đãi...
 
-Link đăng ký, hotline và Zalo BookingCare cho doanh nghiệp đặt cố định trong `he_thong/catalog/app.py`: https://bookingcare.vn/suc-khoe-doanh-nghiep-svo10, 024-7301-2468, https://zalo.me/3344993609824066411.
+Link đăng ký, hotline và Zalo BookingCare cho doanh nghiệp đặt cố định trong `he_thong/catalog/app.py`: https://bookingcare.vn/suc-khoe-doanh-nghiep/dang-ky (mọi link bookingcare.vn được tự gắn utm_source=AI_goikham), 024-7301-2468, https://zalo.me/3344993609824066411.
 
 ## co_so/kham_tong_quat.csv
 

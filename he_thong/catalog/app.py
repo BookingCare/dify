@@ -99,20 +99,28 @@ VAN_BAN = re.compile(r"^\W*(tt|thông tư|thong tu|cv|công văn|cong van|nđ|ng
                      r"phụ lục|phu luc)\W*(số\s*)?(\d|[IVX]+\b)", re.I)
 # Links shown to book / leave contact details (lead). The package's own link (goi/goi.csv `link`) is only its
 # detail page. Business packages collect leads on the corporate page instead.
+# Every bookingcare.vn link the chatbot gives out carries utm_source, so BookingCare can track visits and leads that
+# come from the chatbot (added to the whole response in gan_utm, data links included).
+UTM_SOURCE = os.environ.get("UTM_SOURCE", "AI_goikham")
+LINK_BOOKINGCARE = re.compile(r"https?://(?:www\.)?bookingcare\.vn(?:/[^\s\"'<>()\[\]]*)?")
 LEAD_LINK = "https://bookingcare.vn/tu-van-nhanh?entityName=clinic&entityId={ma}"
-LEAD_LINK_DOANH_NGHIEP = "https://bookingcare.vn/suc-khoe-doanh-nghiep-svo10"
+LEAD_LINK_DOANH_NGHIEP = "https://bookingcare.vn/suc-khoe-doanh-nghiep/dang-ky"
+# the general lead form (no facility or package): for a need the data has no package for
+LEAD_LINK_TU_VAN = "https://bookingcare.vn/tu-van-nhanh"
 HOTLINE_BOOKINGCARE = "024-7301-2468"
 ZALO_BOOKINGCARE = "https://zalo.me/3344993609824066411"
 # Dify's chat renders this markup as a button that opens the link (MarkdownButton)
 CTA_DOANH_NGHIEP = f'<button data-variant="primary" data-link="{LEAD_LINK_DOANH_NGHIEP}">Đăng ký tư vấn khám doanh nghiệp</button>'
 CTA_ZALO = f'<button data-variant="secondary" data-link="{ZALO_BOOKINGCARE}">Chat Zalo với BookingCare</button>'
+CTA_TU_VAN = f'<button data-variant="primary" data-link="{LEAD_LINK_TU_VAN}">Để lại thông tin tư vấn</button>'
 # the contact block that ends every company answer: the sign-up form, Zalo and the BookingCare hotline
 DAN_LIEN_HE = "Bạn để lại thông tin để đội tư vấn BookingCare liên hệ và gửi báo giá, hoặc chat Zalo để trao đổi ngay:"
 KHOI_LIEN_HE = f"{DAN_LIEN_HE}\n\n{CTA_DOANH_NGHIEP} {CTA_ZALO}\n\nHoặc gọi BookingCare: **{HOTLINE_BOOKINGCARE}**"
-# a personal / document need the data has no package for: the chatbot keeps no contact details, so it never says
-# "BookingCare will contact you"; it asks the customer to reach BookingCare (lead), with these lines copied verbatim
-DAN_LIEN_HE_CA_NHAN = "Bạn có thể chat Zalo hoặc gọi BookingCare để được tư vấn thêm:"
-KHOI_LIEN_HE_CA_NHAN = f"{DAN_LIEN_HE_CA_NHAN}\n\n{CTA_ZALO}\n\nHoặc gọi BookingCare: **{HOTLINE_BOOKINGCARE}**"
+# a personal / document need the data has no package for: instead of turning the customer away, ask them to leave
+# their details on the lead form so BookingCare's advisers can suggest a package (lead), with these lines copied
+# verbatim. The chatbot itself keeps no contact details, so it never says the need has been recorded.
+DAN_LIEN_HE_CA_NHAN = "Bạn có thể để lại thông tin để đội ngũ BookingCare hỗ trợ, tư vấn thêm về gói khám phù hợp:"
+KHOI_LIEN_HE_CA_NHAN = f"{DAN_LIEN_HE_CA_NHAN}\n\n{CTA_TU_VAN} {CTA_ZALO}\n\nHoặc gọi BookingCare: **{HOTLINE_BOOKINGCARE}**"
 # The instructions the answer step gets in each situation ("GHI CHÚ: ..."): loi_dan.md next to this file.
 LOI_DAN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "loi_dan.md")
 LOI_DAN_GIA_TRI = {"khoi_lien_he_ca_nhan": KHOI_LIEN_HE_CA_NHAN}  # values loi_dan.md may insert
@@ -1004,15 +1012,20 @@ class Catalog:
             extra.append(self.ghi_chu(
                 "da_luu_sdt",
                 cach_de_lai=("điền form ở nút Đăng ký tư vấn khám doanh nghiệp, hoặc chủ động chat Zalo / gọi BookingCare" if dn
-                             else "để lại thông tin qua nút đặt lịch của gói (nếu có), hoặc chủ động chat Zalo / gọi BookingCare"),
+                             else "để lại thông tin qua nút đặt lịch của gói (nếu có) hoặc nút Để lại thông tin tư vấn, hoặc chủ động chat Zalo / gọi BookingCare"),
                 vi_du=("điền form đăng ký tư vấn bên dưới hoặc chat Zalo / gọi BookingCare" if dn
-                       else "để lại thông tin qua nút đặt lịch, hoặc chat Zalo / gọi BookingCare"),
+                       else "để lại thông tin qua nút đặt lịch hoặc nút Để lại thông tin tư vấn, hoặc chat Zalo / gọi BookingCare"),
                 khoi=("KHỐI LIÊN HỆ ở cuối câu trả lời như thường lệ" if dn
                       else "các dòng sau, chép nguyên văn:\n" + KHOI_LIEN_HE_CA_NHAN)))
         if HOI_BHYT.search(t.nq) and now != "khong_doc_duoc":
             extra.append(self.ghi_chu("bhyt_kham_suc_khoe", cau=CAU_BHYT))
         if t.prev_situation in DA_HOI_LAI and now in ("goi_goi_y", "goi_tai_co_so", "giay_chua_co_o_tinh", "co_so_chua_hop_tac"):
             extra.append(self.ghi_chu("khong_hoi_lai"))
+        # the customer named a package BookingCare does not have and no package is shown: collect the lead now (the
+        # form) instead of only asking back, unless this turn already ends with a contact block
+        if (t.unresolved and out.startswith("MÃ GÓI ĐÃ TRA: không có") and not now.startswith(("doanh_nghiep", "bv_cong"))
+                and now != "khong_doc_duoc" and KHOI_LIEN_HE_CA_NHAN not in out + "".join(extra)):
+            extra.append(self.ghi_chu("goi_khong_co_hien_form", ten="; ".join(f'"{u}"' for u in t.unresolved)))
         if extra:
             head, _, body = out.partition("\n\n")
             out = "\n\n".join([head] + extra + [body])
@@ -1508,6 +1521,8 @@ class Catalog:
                 f" | Giá: {self.gia(self.goi[i]) or 'chưa có'}" for i in shown_before[:8]))
         if t.unresolved:
             parts.append(self.ghi_chu("khong_tim_thay", ten="; ".join(f'"{u}"' for u in t.unresolved)))
+            if not ids:  # nothing else to show: collect the lead instead of only saying there is no information
+                parts.append(self.ld("thu_lead"))
         if (need.get("thu_tu") or need.get("cac_goi_truoc")) and not prev:
             parts.append(self.ghi_chu("khong_ro_goi_truoc"))
         if t.criteria and not ids and not t.unresolved and not symptoms and not cong and not note and not (t.about_fac and not fac):
@@ -1844,6 +1859,20 @@ def catalog():
         return _state["cat"]
 
 
+def gan_utm(text):
+    """Add utm_source to every bookingcare.vn link in text (kept before #fragment; sentence punctuation after a link
+    stays outside it; a link that already has utm_source is left as it is)."""
+    def add(m):
+        url, tail = m.group(0), ""
+        while url[-1] in ".,;:!?":
+            url, tail = url[:-1], url[-1] + tail
+        if "utm_source=" in url:
+            return url + tail
+        base, hash_, frag = url.partition("#")
+        return f"{base}{'&' if '?' in base else '?'}utm_source={UTM_SOURCE}{hash_}{frag}{tail}"
+    return LINK_BOOKINGCARE.sub(add, text)
+
+
 class Handler(BaseHTTPRequestHandler):
     def send(self, code, body, ctype="text/plain; charset=utf-8"):
         data = body.encode("utf-8")
@@ -1870,11 +1899,11 @@ class Handler(BaseHTTPRequestHandler):
         m = re.fullmatch(r"/goi/(\d+)", path)
         if m:
             g = cat.goi.get(m.group(1))
-            return self.send(200, cat.render_goi(g, list(GOI_PHAN))) if g else self.send(404, "không có gói này")
+            return self.send(200, gan_utm(cat.render_goi(g, list(GOI_PHAN)))) if g else self.send(404, "không có gói này")
         m = re.fullmatch(r"/co_so/(\d+)", path)
         if m:
             c = cat.co_so.get(m.group(1))
-            return self.send(200, cat.render_co_so(c)) if c else self.send(404, "không có cơ sở này")
+            return self.send(200, gan_utm(cat.render_co_so(c))) if c else self.send(404, "không có cơ sở này")
         self.send(404, "not found")
 
     def do_POST(self):
@@ -1893,7 +1922,7 @@ class Handler(BaseHTTPRequestHandler):
             if isinstance(f, dict) and "nhu_cau" in f:
                 body = (f"TRUOC: {f.get('truoc') or ''}\n{f.get('nhu_cau') or ''}\n"
                         f"HOI: {str(f.get('cau_hoi') or '').replace(chr(10), ' ')}")
-        self.send(200, spell_day_spans(catalog().tra_cuu(body)))
+        self.send(200, gan_utm(spell_day_spans(catalog().tra_cuu(body))))
 
     def log_message(self, fmt, *args):
         print(f"{self.address_string()} {fmt % args}", flush=True)

@@ -22,8 +22,8 @@ bạn muốn khám tổng quát cho bản thân / gia đình, khám cho nhân vi
 Bạn muốn khám tổng quát cho bản thân, khám cho nhân viên công ty hay khám lấy giấy tờ (lái xe, đi làm, visa...), và ở khu vực nào?
 
 ## thu_lead
-> Không có gói phù hợp: bot không có thông tin liên lạc của khách, nên mời khách tự liên hệ (thu lead).
-KHÔNG nói BookingCare đã ghi nhận nhu cầu hay đội tư vấn sẽ liên hệ / báo lại (hệ thống chưa có thông tin liên lạc của khách). Mời khách để lại thông tin qua Zalo hoặc gọi BookingCare để được tư vấn nơi khám phù hợp, rồi chép NGUYÊN VĂN các dòng giữa hai dấu ---- (không chép dấu ----):
+> Không có gói phù hợp: không từ chối khách, mời khách để lại thông tin qua form tư vấn để đội ngũ BookingCare tư vấn (thu lead).
+Sau câu nói chưa có thông tin, KHÔNG viết câu từ chối kiểu "nên chưa thể gợi ý gói hay nơi khám cụ thể cho bạn". Mời khách để lại thông tin để đội ngũ BookingCare hỗ trợ, tư vấn thêm về gói khám phù hợp. KHÔNG nói BookingCare đã ghi nhận nhu cầu hay đội tư vấn sẽ liên hệ (khách chưa điền form). Chép NGUYÊN VĂN các dòng giữa hai dấu ---- (không chép dấu ----), ở cuối câu trả lời:
 ----
 {khoi_lien_he_ca_nhan}
 ----
@@ -195,6 +195,11 @@ khách hỏi {loai_kham} tại bệnh viện công ({ten}). Hiện BookingCare c
 khách cần liên hệ (xin số, muốn gặp người tư vấn, hoặc báo lỗi khi đặt lịch). Khách hỏi số của một cơ sở cụ thể thì đưa điện thoại trong khối CƠ SỞ Y TẾ của cơ sở đó (nếu có). Luôn kèm kênh của BookingCare, chép nguyên văn các dòng sau; không nói "chưa có số điện thoại" hay "chưa có thông tin liên hệ":
 {khoi_lien_he_ca_nhan}
 Không hứa sẽ kiểm tra lỗi hay gọi lại; nút đặt lịch của gói (nếu có) vẫn dùng được.
+
+## goi_khong_co_hien_form
+> Khách hỏi đích danh một gói BookingCare chưa có, lượt này chưa nêu gói nào: thu lead ngay, kể cả khi đang hỏi lại khách.
+khách hỏi {ten} mà BookingCare chưa có thông tin. Nói ngắn là mình chưa có thông tin về {ten}; KHÔNG viết câu từ chối kiểu "nên chưa thể gợi ý gói hay nơi khám cụ thể cho bạn". Nếu GHI CHÚ khác bảo hỏi lại khách (nhu cầu, khu vực...) thì vẫn hỏi đúng câu đó để tìm gói gần nhất. KHÔNG nói BookingCare đã ghi nhận nhu cầu hay sẽ liên hệ (khách chưa điền form). Riêng lượt này BẮT BUỘC kết thúc câu trả lời bằng đúng các dòng sau, chép nguyên văn, kể cả khi GHI CHÚ khác nói không đưa nút hay link:
+{khoi_lien_he_ca_nhan}
 
 ## khong_hoi_lai
 > Lượt trước bot đã hỏi lại khách: lượt này gợi ý luôn.
