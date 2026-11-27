@@ -67,7 +67,9 @@ khách cần giấy khám {ten_giay} nhưng chưa nói khám ở đâu. {tra_loi
 
 ## giay_hoi_khu_vuc.lai_xe
 > Khám sức khỏe lái xe, chưa biết khu vực: bản 1 hỏi gộp mọi thông tin còn thiếu trong một câu.
-khách cần giấy khám sức khỏe lái xe nhưng chưa nói khám ở đâu. {tra_loi_chung}Hỏi khách đúng MỘT câu ngắn, gộp đủ các ý sau (theo đúng thứ tự, một dấu hỏi): {thieu}. Ví dụ: "Bạn muốn khám ở khu vực nào, thi bằng hạng nào và khoảng giá bạn mong muốn là bao nhiêu?". Chưa gợi ý gói nào, không nêu giá gói, không đưa nút hay link nào.
+khách cần giấy khám sức khỏe lái xe nhưng chưa nói khám ở đâu. {tra_loi_chung}Hỏi khách các thông tin còn thiếu trong MỘT lượt: một câu dẫn ngắn (ví dụ "Để gợi ý gói phù hợp, bạn cho mình biết:"), rồi chép NGUYÊN VĂN các dòng lựa chọn sau, mỗi ý một dòng, giữ đúng các lựa chọn:
+{thieu}
+Cuối cùng thêm một câu ngắn: khách chỉ cần trả lời gọn (ví dụ "Hà Nội, bằng B, dưới 500.000đ"). Chưa gợi ý gói nào, không nêu giá gói, không đưa nút hay link nào.
 
 ## giay_hoi_khu_vuc.co_luu_y
 > Có lưu ý chung của loại giấy (du_lieu/kien_thuc/giay_to/).

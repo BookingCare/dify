@@ -14,6 +14,7 @@ Endpoints
   GET  /co_so/<ma>      one facility as the chatbot sees it
   GET  /openapi.json    OpenAPI schema of the endpoints the chatbot uses (Dify custom tool)
 """
+import collections
 import csv
 import json
 import os
@@ -1395,13 +1396,19 @@ class Catalog:
                  "\n\n".join(f"{h}:\n{txt}" for h, txt in notes)) if notes else ""
         tra_loi_chung = self.ld("giay_hoi_khu_vuc.co_luu_y") + " " if block else ""
         if t.purpose == "lai_xe":
-            # driving licence (version 1): every missing detail is asked in the same single question
-            thieu = ["khám ở khu vực nào (tỉnh/thành, có thể kèm quận/phường)"]
+            # driving licence (version 1): every missing detail is asked at once, each with choices from the data
+            goi = [g for g in self.goi.values() if "lai_xe" in g["tags"]]
+            dem = collections.Counter(g["tinh"] for g in goi if g["tinh"])
+            tinh = [p.replace("Thành phố ", "TP. ") for p in sorted(dem, key=lambda p: (-dem[p], p != "Hà Nội"))]
+            thieu = [f"- **Khu vực:** {', '.join(tinh)} hay tỉnh/thành khác (có thể kèm quận/phường)?"]
             if not t.need.get("hang_bang"):
-                thieu.append("thi / đổi bằng lái hạng nào (A1, A, B, C...)")
+                thieu.append("- **Hạng bằng:** A1, A (xe máy), B (ô tô) hay C1, C, D... (xe tải, xe khách)?")
             if not (t.need.get("ngan_sach") or t.need.get("ngan_sach_tu")):
-                thieu.append("khoảng giá mong muốn (nếu có)")
-            note = self.ghi_chu("giay_hoi_khu_vuc.lai_xe", tra_loi_chung=tra_loi_chung, thieu="; ".join(thieu))
+                gia = [g["gia_tu"] for g in goi if g["gia_tu"]]
+                muc = [(0, 500000, "dưới 500.000đ"), (500000, 1000000, "500.000đ – 1.000.000đ"), (1000000, 0, "trên 1.000.000đ")]
+                co = [ten for lo, hi, ten in muc if any(p >= lo and (not hi or p < hi) for p in gia)]
+                thieu.append(f"- **Khoảng giá:** {' hay '.join(co) if len(co) <= 2 else ', '.join(co[:-1]) + ' hay ' + co[-1]}?")
+            note = self.ghi_chu("giay_hoi_khu_vuc.lai_xe", tra_loi_chung=tra_loi_chung, thieu="\n".join(thieu))
         else:
             note = self.ghi_chu("giay_hoi_khu_vuc", ten_giay=LOAI_GIAY_TEN[t.purpose], tra_loi_chung=tra_loi_chung)
         return self.ket_qua("giay_hoi_khu_vuc", [], [], [note, block])
