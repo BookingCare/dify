@@ -1068,11 +1068,19 @@ class Catalog:
         else:
             gia = "chưa có giá (khách gọi cơ sở để hỏi)"
         lx = self.duoc_kham_lai_xe(r["co_so"])
+        # the sheet's notes: "RIÊNG CƠ SỞ: ..." (this place) then "GIẤY TỜ: ... TRƯỚC KHI KHÁM: ..." (the same everywhere)
+        luu_y = r.get("luu_y") or ""
+        m = re.search(r"RIÊNG CƠ SỞ:\s*(.*?)(?=GIẤY TỜ:|$)", luu_y, re.S)
+        rieng = re.sub(r"\s*Nguồn:.*$", "", m.group(1).strip(), flags=re.S).strip(" .") if m else ""
+        chung = luu_y[luu_y.find("GIẤY TỜ:"):].strip() if "GIẤY TỜ:" in luu_y else ("" if m else luu_y.strip())
+        gio = r.get("gio_lam_viec") or ""
+        gio = "KHÔNG CÓ TRONG DỮ LIỆU" if not gio or norm(gio) in ("chua co", "chua co thong tin") else gio
         lines = [f"=== GÓI THAM KHẢO {r['ma']} (không có nút đặt lịch) ===",
                  f"Tên gói: {r['ten_goi']}", f"Nơi khám: {r['co_so']}", f"Địa chỉ: {r['dia_chi']}",
                  f"Tỉnh/thành: {r['tinh']}", f"Giá tham khảo: {gia}",
                  f"Đối tượng / hạng bằng: {r['doi_tuong']}", f"Danh mục khám: {r['danh_muc']}",
-                 f"Lưu ý khi đi khám: {r['luu_y']}", f"Giờ làm việc: {r.get('gio_lam_viec') or 'KHÔNG CÓ TRONG DỮ LIỆU'}",
+                 f"Lưu ý riêng của cơ sở: {rieng or 'KHÔNG CÓ TRONG DỮ LIỆU'}", f"Lưu ý chung khi đi khám: {chung or 'KHÔNG CÓ TRONG DỮ LIỆU'}",
+                 f"Giờ làm việc: {gio}",
                  f"Điện thoại của cơ sở: {r.get('dien_thoai') or 'KHÔNG CÓ TRONG DỮ LIỆU'}"]
         if r.get("ghi_chu"):
             lines.append(f"Ghi chú: {r['ghi_chu']}")
